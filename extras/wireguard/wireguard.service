@@ -1,0 +1,17 @@
+[Unit]
+Description=Wireguard vpn
+StartLimitIntervalSec=0
+# when resolving remote endpoint addresses
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/etc/bird/wireguard/wireguard.sh start
+ExecStop=/etc/bird/wireguard/wireguard.sh stop
+RestartSec=2s
+Restart=on-failure
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

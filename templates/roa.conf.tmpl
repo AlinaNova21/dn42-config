@@ -1,0 +1,16 @@
+roa4 table dn42_roa_v4;
+roa6 table dn42_roa_v6;
+
+protocol static {
+  roa4 { table dn42_roa_v4; };
+  {{#each dn42.route4}}
+  route {{prefix}}/{{subnet}} max {{max}} as {{as}};
+  {{/each}}  
+};
+
+protocol static {
+  roa6 { table dn42_roa_v6; };
+  {{#each dn42.route6}}
+  route {{prefix}}/{{subnet}} max {{max}} as {{as}};
+  {{/each}}  
+};

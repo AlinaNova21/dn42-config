@@ -1,0 +1,14 @@
+{
+  "name": "config",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ags131/dn42-config.git",
+  "author": "Adam Shumann <ashumann13@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "glob": "^7.1.3",
+    "handlebars": "^4.0.12",
+    "yamljs": "^0.3.0"
+  }
+}

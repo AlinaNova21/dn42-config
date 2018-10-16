@@ -1,0 +1,14 @@
+#!/bin/sh
+## usage
+#"$action" "<local_port>" "<peer_name>" "<peer_public_key>" "<peer_host:port>" "<peer_ip4>" "<peer_ip6>"
+
+OWN_IP4="{{ipv4}}"
+OWN_IP6="{{localipv6}}/64"
+PRIVATE_KEY=$(cat /etc/bird/wireguard/private.key)
+
+{{#each allPeers}}
+{{#if wireguard}}
+# {{name}} {{as}}
+$action "{{wireguard.listenPort}}" "{{wireguard.interface}}" "{{wireguard.publicKey}}" "{{wireguard.endpoint}}" "{{ipv4}}/32" "{{ipv6}}"
+{{/if}}
+{{/each}}

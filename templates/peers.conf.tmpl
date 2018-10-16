@@ -1,0 +1,47 @@
+{{#each allPeers}}
+{{#if multiChannel}}
+{{#if (eq type 'iBGP_Peer')}}
+ipv4 table T_iBGP_{{name}}_v4;
+ipv6 table T_iBGP_{{name}}_v6;
+{{/if}}
+protocol bgp {{name}}_multi {{#if type}}from {{type}}{{/if}} {
+  {{#unless debug}}#{{/unless}}debug all;
+  {{#if (eq type 'iBGP_Peer')}}
+  ipv4 { table T_iBGP_{{name}}_v4; };
+  ipv6 { table T_iBGP_{{name}}_v6; };
+  {{/if}}
+  {{#if (eq multiChannel 'ipv6')}}
+  source address {{../localipv6}};
+  neighbor {{ipv6}}%'{{wireguard.interface}}' as {{as}};
+  {{/if}}
+  {{#if (eq multiChannel 'ipv4')}}
+  neighbor {{ipv4}} as {{as}};
+  {{/if}}
+};
+{{else}}
+{{#if ipv4}}
+protocol bgp {{ name }}_v4 from {{#if type}}{{type}}{{/if}} {
+  {{#unless debug}}#{{/unless}}debug all;
+  neighbor {{ipv4}} as {{as}};
+};
+{{/if}}
+{{#if ipv6}}
+protocol bgp {{name}}_v6 from {{#if type}}{{type}}{{/if}} {
+  {{#unless debug}}#{{/unless}}debug all;
+  source address {{../localipv6}};
+  neighbor {{ipv6}}%'{{wireguard.interface}}' as {{as}};
+};
+{{/if}}
+{{/if}}
+
+{{/each}}
+
+{{#each ibgp}}
+protocol pipe p_{{name}}_v4 from iBGP_Pipe_v4 {
+  table T_iBGP_{{name}}_v4;
+}
+protocol pipe p_{{name}}_v6 from iBGP_Pipe_v6 {
+  table T_iBGP_{{name}}_v6;
+}
+
+{{/each}}

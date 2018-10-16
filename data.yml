@@ -1,0 +1,33 @@
+wireguard: {}
+dn42:
+  as: '4242420131'
+  ipv4: '172.22.169.2'
+  ipv6: 'fd42:465:1337::2'
+  localipv6: 'fe80::465:1337:2'
+  region: 41
+  nets:
+    ipv4:
+    - ['172.22.169.0/28', 28, 29]
+    ipv6:
+    - ['fd42:465:1337::/48', 48, 64]
+  ibgp:
+  - name: fr01
+    enabled: true
+    multiChannel: ipv4
+    wireguard:
+      listenPort: 43001
+      endpoint: dn42-fr01.ags131.space:43002
+      publicKey: XbKVL63O8+L5XrDz080DbKnAJb90e1VkDUdI4NPpW1Q=
+    ipv4: '172.22.169.1'
+    ipv6: 'fe80::465:1337:1'
+  peers:
+  - 
+    name: zhaofeng
+    enabled: true
+    multiChannel: ipv6
+    as: '4242421926'
+    wireguard:
+      endpoint: 35.196.71.177:20131
+      publicKey: nu5XkSjLCEQkiaXj4JWSUQrO3gstTiMGNAQmt+ubyHc=
+    ipv4: '172.20.138.6'
+    ipv6: 'fe80::2e41'

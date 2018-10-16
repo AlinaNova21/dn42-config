@@ -1,0 +1,245 @@
+define OWNAS = {{as}};
+define OWNIPv4 = {{ipv4}};
+define OWNIPv6 = {{ipv6}};
+define OWNNETv4 = {{nets.ipv4.[0].[0]}};
+define OWNNETv6 = {{nets.ipv6.[0].[0]}};
+
+define OWNNETSETv4 = [
+  {{#each nets.ipv4}}
+  {{0}}{ {{~1}},{{2~}} }{{#unless @last}},{{/unless}}
+  {{/each}}
+];
+define OWNNETSETv6 = [
+  {{#each nets.ipv6}}
+  {{0}}{ {{~1}},{{2~}} }{{#unless @last}},{{/unless}}
+  {{/each}}
+];
+
+define DN42_REGION = {{region}};
+# https://github.com/Mic92/bird-dn42/blob/master/local4-template.conf
+
+router id {{ipv4}};
+
+protocol device {
+  scan time 10;
+}
+
+/*
+ *  Utility functions
+ */
+
+function is_self_net_v4() {
+  return net ~ OWNNETSETv4;
+}
+
+function is_self_net_v6() {
+  return net ~ OWNNETSETv6;
+}
+
+function is_valid_network_v4() {
+  return net ~ [
+    {{#each dn42.validNets.ipv4}}
+    {{prefix}}{ {{~minlen}},{{maxlen~}} }{{#unless @last}},{{/unless}} # {{comment}}
+    {{/each}}
+  ];
+}
+
+function is_valid_network_v6() {
+  return net ~ [
+    {{#each dn42.validNets.ipv6}}
+    {{prefix}}{ {{~minlen}},{{maxlen~}} }{{#unless @last}},{{/unless}} # {{comment}}
+    {{/each}}
+  ];
+}
+
+include "/etc/bird/roa.conf";
+
+protocol kernel {
+  scan time 20;
+  ipv4 {
+    import none;
+    export filter {
+      if source = RTS_STATIC then reject;
+      krt_prefsrc = OWNIPv4;
+      accept;
+    };
+  };
+}
+
+protocol kernel {
+  scan time 20;
+  ipv6 {
+    import none;
+    export filter {
+      if source = RTS_STATIC then reject;
+      krt_prefsrc = OWNIPv6;
+      accept;
+    };
+  };
+}
+
+protocol static {
+  route OWNNETv4 reject;
+  ipv4 {
+    import all;
+    export none;
+  };
+}
+
+protocol static {
+  route OWNNETv6 reject;
+  ipv6 {
+    import all;
+    export none;
+  };
+}
+
+template bgp dnpeers {
+  local as OWNAS;
+  path metric 1;
+  ipv4 {
+    import filter {
+      if is_valid_network_v4() && !is_self_net_v4() then {
+        if (roa_check(dn42_roa_v4, net, bgp_path.last) != ROA_VALID) then {
+          print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+          reject;
+        } else accept;
+      } else reject;
+    };
+    export filter { if is_valid_network_v4() then accept; else reject; };
+    import limit 1000 action block;
+  };
+  ipv6 {
+    import filter {
+      if is_valid_network_v6() && !is_self_net_v6() then {
+        if (roa_check(dn42_roa_v6, net, bgp_path.last) != ROA_VALID) then {
+          print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+          reject;
+        } else accept;
+      } else reject;
+    };
+    export filter { if is_valid_network_v6() then accept; else reject; };
+    import limit 1000 action block;
+  };
+}
+
+ipv4 table T_OSPF_v4;
+ipv6 table T_OSPF_v6;
+
+protocol pipe P_OSPF_v4 {
+  table T_OSPF_v4;
+  peer table master4;
+  import none;
+  export all;
+}
+
+protocol pipe P_OSPF_v6 {
+  table T_OSPF_v6;
+  peer table master6;
+  import none;
+  export all;
+}
+
+protocol ospf v2 O_OSPF_v4 {
+  ipv4 { table T_OSPF_v4; export all; };
+  area 0.0.0.0 {
+    interface "lo" {
+      stub;
+    };
+    interface "wg-int-*" {
+    };
+  };
+}
+
+protocol ospf v3 O_OSPF_v6 {
+  ipv6 { table T_OSPF_v6; export all; };
+  area 0.0.0.0 {
+    interface "lo" {
+      stub;
+    };
+    interface "wg-int-*" {
+    };
+  };
+}
+
+function iBGP_routing_policy() {
+  if source = RTS_OSPF then return false;       # For iBGP i don't want OSPF in my Routing Policy
+  if source = RTS_DEVICE then return false;     # For iBGP i don't want DEVICE ROUTES in my Routing Policy
+
+  krt_prefsrc = OWNIPv4;
+
+  return true;                                  # Allow all on iBGP Links
+};
+
+function iBGP_routing_policy_v6() {
+  if source = RTS_OSPF then return false;       # For iBGP i don't want OSPF in my Routing Policy
+  if source = RTS_DEVICE then return false;     # For iBGP i don't want DEVICE ROUTES in my Routing Policy
+
+  krt_prefsrc = OWNIPv6;
+
+  return true;                                  # Allow all on iBGP Links
+};
+
+function iBGP_import_peer_policy() {
+
+  if bgp_path.len > 64 then return false;       # Reject too long BGP Paths
+  #if local_nets() then return false;            # Reject local used networks (IXP, Peerings) from iBGP Peers
+  if ( bgp_local_pref > 1000 ) then {           # Reset local pref on iBGP Links, to do AS Path Metric only
+        bgp_local_pref = 100;
+  }
+
+  return true;                                  # Allow all on iBGP Links
+};
+
+function iBGP_export_peer_policy() {
+
+  #if proto = "dn42_static" then return true;    # Allow Static announced routes, should be renamed to S_STATIC
+  if proto = RTS_STATIC then return true; 
+
+  if source != RTS_BGP then return false;
+  if bgp_path.len > 64 then return false;
+
+  return true;                                  # Allow all on iBGP Links
+};
+
+# Template for iBGP Peerings
+template bgp iBGP_Peer {
+  local as OWNAS;
+  # Table should be set within each Peer to T_PEERNAME
+  path metric on;                               # Enable comparison of path lengths when deciding which BGP route is the best one
+  source address OWNIPv4; 
+  ipv4 {
+    igp table T_OSPF_v4;
+    import keep filtered;                         # Keep Filtered Routes for this peering.
+    import where iBGP_import_peer_policy();       # iBGP Import Peer Policy
+    export where iBGP_export_peer_policy();       # iBGP Export Peer Policy
+    next hop self;                                # Set Next Hop Self for clean routing
+  }; # iBGP Peering with MYIPv4 to add backup paths
+  ipv6 {
+    igp table T_OSPF_v6;
+    import keep filtered;                         # Keep Filtered Routes for this peering.
+    import where iBGP_import_peer_policy();       # iBGP Import Peer Policy
+    export where iBGP_export_peer_policy();       # iBGP Export Peer Policy
+    next hop self;                                # Set Next Hop Self for clean routing
+  }; # iBGP Peering with MYIPv4 to add backup paths
+};
+
+# Template Pipe for iBGP Peerings
+ipv4 table T_DUMMY_v4;
+ipv6 table T_DUMMY_v6;
+
+template pipe iBGP_Pipe_v4 {
+  table T_DUMMY_v4;
+  peer table master4;
+  import where iBGP_routing_policy();
+  export where iBGP_routing_policy();
+}
+
+template pipe iBGP_Pipe_v6 {
+  table T_DUMMY_v6;
+  peer table master6;
+  import where iBGP_routing_policy_v6();
+  export where iBGP_routing_policy_v6();
+}
+
+include "/etc/bird/peers/*";
