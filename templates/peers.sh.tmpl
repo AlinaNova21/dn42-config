@@ -2,13 +2,13 @@
 ## usage
 #"$action" "<local_port>" "<peer_name>" "<peer_public_key>" "<peer_host:port>" "<peer_ip4>" "<peer_ip6>"
 
-OWN_IP4="{{ipv4}}"
-OWN_IP6="{{localipv6}}/64"
 PRIVATE_KEY=$(cat /etc/bird/wireguard/private.key)
 
 {{#each allPeers}}
 {{#if wireguard}}
 # {{name}} {{as}}
-$action "{{wireguard.listenPort}}" "{{wireguard.interface}}" "{{wireguard.publicKey}}" "{{wireguard.endpoint}}" "{{ipv4}}/32" "{{ipv6}}"
+OWN_IP4={{#if own.ipv4}}"{{own.ipv4}}"{{else}}"{{../ipv4}}"{{/if}}
+OWN_IP6={{#if own.ipv6}}"{{own.ipv6}}/64"{{else}}"{{../localipv6}}/64"{{/if}}
+$action "{{wireguard.listenPort}}" "{{wireguard.interface}}" "{{wireguard.publicKey}}" "{{wireguard.endpoint}}" "{{#if ipv4}}{{ipv4}}/32{{/if}}" "{{ipv6}}"
 {{/if}}
 {{/each}}
