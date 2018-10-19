@@ -9,18 +9,23 @@ const readFile = util.promisify(fs.readFile)
 const exec = util.promisify(child_process.exec)
 const glob = util.promisify(Glob)
 
-module.exports = async (config, data) => {
-	const { stdout, stderr } = await exec('git pull', { cwd: path.resolve('registry') })
-  process.stdout.write(`Registry GIT: ${stdout}`)
-  process.stderr.write(`Registry GIT: ${stderr}`)
+let cache = null
 
-  const ipv4 = parseFilter(await readFile('registry/data/filter.txt', 'utf8'))
-  const ipv6 = parseFilter(await readFile('registry/data/filter6.txt', 'utf8'))
-  const { route4, route6 } = await roaImport()
-  data.dn42 = {
-    validNets: { ipv4, ipv6 },
-    route4, route6
+module.exports = async (config, data) => {
+  if (!cache) {
+  	const { stdout, stderr } = await exec('git pull', { cwd: path.resolve('registry') })
+    process.stdout.write(`Registry GIT: ${stdout}`)
+    process.stderr.write(`Registry GIT: ${stderr}`)
+  
+    const ipv4 = parseFilter(await readFile('registry/data/filter.txt', 'utf8'))
+    const ipv6 = parseFilter(await readFile('registry/data/filter6.txt', 'utf8'))
+    const { route4, route6 } = await roaImport()
+    cache = {
+      validNets: { ipv4, ipv6 },
+      route4, route6
+    }
   }
+  data.dn42 = cache
 }
 
 function parseFilter (data) {

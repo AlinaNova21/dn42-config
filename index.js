@@ -31,9 +31,11 @@ async function run() {
       console.log(`WARN: ${file.dest} file doesn't exist`)
     }
     data[file.key] = data[file.key] || {}
-    await Promise.all((file.modules || []).map(async m => {
+    //await Promise.all((file.modules || []).map(async m => {
+    for(const m of file.modules) {
       data[file.key] = await modules[m](file, data[file.key]) || data[file.key]
-    }))
+    }
+    //}))
     const template = handlebars.compile(file.template || await readFile(file.src, 'utf8'), { noEscape: true })
     const out = template(data[file.key])
     const newHash = sha256(out)

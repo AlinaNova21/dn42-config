@@ -18,6 +18,7 @@ files:
   src: templates/bird.conf.tmpl
   dest: out/bird/bird.conf
   modules:
+  - pull
   - dn42_registry
   - peers
   reloadCmd: '/usr/bin/birdc configure'
@@ -26,6 +27,7 @@ files:
   src: templates/roa.conf.tmpl
   dest: out/bird/roa.conf
   modules:
+  - pull
   - dn42_registry
   reloadCmd: '/usr/bin/birdc configure'
 - 
@@ -33,6 +35,7 @@ files:
   src: templates/peers.conf.tmpl
   dest: out/bird/peers/dn42_peers.conf
   modules:
+  - pull
   - peers
   reloadCmd: '/usr/bin/birdc configure'
 - 
@@ -40,5 +43,6 @@ files:
   src: templates/peers.sh.tmpl
   dest: out/bird/wireguard/peers.sh
   modules:
+  - pull
   - peers
   reloadCmd: '/etc/bird/wireguard/wireguard.sh restart'

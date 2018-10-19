@@ -1,0 +1,70 @@
+ipv4: '172.22.169.1'
+ipv6: 'fd42:465:1337::1'
+localipv6: 'fe80::465:1337:1'
+region: 41
+ibgp:
+- name: us01
+  enabled: true
+  ipv4: '172.22.169.2'
+  ipv6: 'fe80::465:1337:2'
+  wireguard:
+    listenPort: 43002
+    endpoint: dn42-us01.ags131.space:43001
+    publicKey: jhZ9cJbZjfP4yqYd18a0Ua6x8X1LETOOiktcKWFdl3k=
+- name: ws119
+  enabled: true
+  ipv4: '172.22.169.3'
+  ipv6: 'fe80::1:119'
+peers:
+- name: burble
+  enabled: true
+  as: '4242422601'
+  wireguard:
+    listenPort: 42001
+    endpoint: dn42-fr-rbx1.burble.com:49943
+    publicKey: zUWFYjJW8E07DsyXHlIcCPXcVaK7tmfsOCkfJDaEMUw=
+  ipv4: '172.20.129.188'
+  ipv6: 'fe80::42:2601:36:1'
+- name: weiti
+  enabled: true
+  as: '4242423905'
+  wireguard: 
+    listenPort: 42002
+    publicKey: kFHKnMg0EKUEPC8bKMSlQdL01wFwHsyg80GvTDd9hSk=
+    endpoint: 137.74.116.167:20131
+  ipv4: '172.20.175.197'
+  ipv6: 'fe80::42'
+- name: yamakaja
+  enabled: true
+  multiChannel: ipv6
+  as: '4242421191'
+  wireguard:
+    endpoint: vps.pub.yamakaja.me:11258
+    publicKey: c5Dw1Sc68+/YqrFGLIQYIYKW6KFsbRV2JEjOEtOpBRg=
+  ipv4: '172.20.20.64'
+  ipv6: 'fe80::1191'
+- name: graffen
+  enabled: true
+  as: '4242423934'
+  wireguard:
+    endpoint: dn42-de-fsn1.hessnet.dk:51827
+    publicKey: qChjUaGN7D44d+3KJk4liFQvm8EQuKGYXlCMOYQhLx8=
+  ipv4: '172.20.170.192'
+  ipv6: 'fe80::42:1000'
+- name: zhaofeng
+  enabled: true
+  multiChannel: ipv6
+  as: '4242421926'
+  wireguard:
+    endpoint: 178.33.208.43:20131
+    publicKey: ECLk/X4ciNHnTcXxn2sO5OLnYu6NiyrTexzlfDd+QBo=
+  ipv4: '172.20.138.5'
+  ipv6: 'fe80::2e41'
+- name: jamie9898
+  enabled: false
+  as: '4242423640'
+  wireguard:
+    endpoint:
+    publicKey:
+  ipv4:
+  ipv6: 
