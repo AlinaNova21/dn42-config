@@ -13,7 +13,7 @@ const PID = process.pid
 const NS=`nsenter --net=/proc/1/ns/net --no-fork`
 
 async function run() {
-  setInterval(tick, 10000)
+  setInterval(tick, 300000)
   await tick()
 }
 
