@@ -8,6 +8,11 @@ services:
     - 172.22.169.2
     sysctls:
     - net.ipv6.conf.all.disable_ipv6=0
+  util:
+    image: alpine
+    command: 'mkdir -p /data/bird/peers /data/wireguard'
+    volumes:
+    - data:/data
   toolbox:
     build: ./toolbox
     restart: always
@@ -16,6 +21,9 @@ services:
     network_mode: service:pause
     cap_add:
     - NET_ADMIN
+    volumes:
+    - data:/data
+    - run:/var/run
   bird:
     build: ./bird
     restart: always
@@ -26,6 +34,9 @@ services:
     - NET_ADMIN
     volumes:
     - /etc/bird:/etc/bird:ro
+    volumes:
+    - data:/data:ro
+    - run:/var/run
   netman:
     build: ./netman
     restart: always
@@ -35,7 +46,17 @@ services:
     pid: host
     privileged: true
     volumes:
-    - /etc/bird:/etc/bird:ro
-  alicelg:
+    - data:/data:ro
+  configman:
+    build: ./configman
+    restart: always
+    volumes:
+    - data:/data
+    - run:/var/run
+    command: 'sh -c "while true; do yarn start; sleep 3000; done"'
+  birdwatcher:
     image: k8s.gcr.io/pause:3.1
-    # TODO: Build alice image
+    # TODO: Build birdwatcher image, link to bird container
+volumes:
+  data:
+  run:

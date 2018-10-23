@@ -1,0 +1,47 @@
+files:
+- 
+  key: wireguard
+  template: '{{privateKey}}'
+  dest: /data/wireguard/private.key
+  privateKey: /data/wireguard/private.key
+  modules:
+  - wireguard
+- 
+  key: wireguard
+  template: '{{publicKey}}'
+  dest: /data/wireguard/public.key
+  privateKey: /data/wireguard/private.key
+  modules:
+  - wireguard
+- 
+  key: dn42
+  src: templates/bird.conf.tmpl
+  dest: /data/bird/bird.conf
+  modules:
+  - pull
+  - dn42_registry
+  - peers
+  reloadCmd: '/app/reload_bird.js'
+- 
+  key: dn42
+  src: templates/roa.conf.tmpl
+  dest: /data/bird/roa.conf
+  modules:
+  - pull
+  - dn42_registry
+  reloadCmd: '/app/reload_bird.js'
+- 
+  key: dn42
+  src: templates/peers.conf.tmpl
+  dest: /data/bird/peers/dn42_peers.conf
+  modules:
+  - pull
+  - peers
+  reloadCmd: '/app/reload_bird.js'
+- 
+  key: dn42
+  template: '{{wgConfig}}'
+  dest: /data/wireguard/config.json
+  modules:
+  - pull
+  - peers

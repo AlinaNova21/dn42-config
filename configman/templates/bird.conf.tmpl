@@ -60,7 +60,7 @@ function is_valid_network_v6() {
   ];
 }
 
-include "/etc/bird/roa.conf";
+include "/data/bird/roa.conf";
 
 protocol kernel {
   scan time 20;
@@ -250,4 +250,4 @@ template pipe iBGP_Pipe_v6 {
   export where iBGP_routing_policy_v6();
 }
 
-include "/etc/bird/peers/*";
+include "/data/bird/peers/*";

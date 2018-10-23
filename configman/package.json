@@ -5,6 +5,9 @@
   "repository": "git@github.com:ags131/dn42-config.git",
   "author": "Adam Shumann <ashumann13@gmail.com>",
   "license": "MIT",
+  "scripts": {
+		"start": "node index.js"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "glob": "^7.1.3",

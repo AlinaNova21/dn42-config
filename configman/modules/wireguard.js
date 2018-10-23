@@ -6,6 +6,7 @@ const readFile = util.promisify(fs.readFile)
 const exec = util.promisify(child_process.exec)
 
 module.exports = async (config, data) => {
+	if(data.privateKey && data.publicKey) return
   const existing = await tryRead(config.privateKey)
   const privateKey = existing || await genKey()
   const publicKey = await pubKey(privateKey)

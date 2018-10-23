@@ -38,7 +38,7 @@ async function tick () {
 }
 
 async function loadConfig() {
-  return JSON.parse(await readFile('/etc/bird/wireguard/config.json', 'utf8'))
+  return JSON.parse(await readFile('/data/wireguard/config.json', 'utf8'))
 }
 
 async function hasInterface(name) {
@@ -51,7 +51,7 @@ async function hasInterface(name) {
 }
 
 async function configureInterface(config, peer) {
-  let conf = `private-key /etc/bird/wireguard/private.key peer "${peer.publicKey}" allowed-ips "0.0.0.0/0, ::/0"`
+  let conf = `private-key /data/wireguard/private.key peer "${peer.publicKey}" allowed-ips "0.0.0.0/0, ::/0"`
   if (peer.endpoint) conf += ` endpoint "${peer.endpoint}"`
   if (peer.listenPort) conf = `listen-port ${peer.listenPort} ${conf}`
   await exec(`wg set "${peer.interface}" ${conf}`)
