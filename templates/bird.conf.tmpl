@@ -4,6 +4,8 @@ define OWNIPv6 = {{ipv6}};
 define OWNNETv4 = {{nets.ipv4.[0].[0]}};
 define OWNNETv6 = {{nets.ipv6.[0].[0]}};
 
+log stderr all;
+
 define OWNNETSETv4 = [
   {{#each nets.ipv4}}
   {{0}}{ {{~1}},{{2~}} }{{#unless @last}},{{/unless}}
@@ -17,6 +19,12 @@ define OWNNETSETv6 = [
 
 define DN42_REGION = {{region}};
 # https://github.com/Mic92/bird-dn42/blob/master/local4-template.conf
+
+# Make birdwatcher happy
+timeformat base         iso long;
+timeformat log          iso long;
+timeformat protocol     iso long;
+timeformat route        iso long;
 
 router id {{ipv4}};
 

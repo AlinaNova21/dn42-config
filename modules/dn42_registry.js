@@ -40,12 +40,12 @@ function parseFilter (data) {
 async function roaImport () {
   const route4files = await glob('registry/data/route/*')
   const route6files = await glob('registry/data/route6/*')
-  const route4 = parseRoutes(await Promise.all(route4files.map(f => readFile(f, 'utf8'))))
-  const route6 = parseRoutes(await Promise.all(route6files.map(f => readFile(f, 'utf8'))))
+  const route4 = parseRoutes(await Promise.all(route4files.map(f => readFile(f, 'utf8'))), false)
+  const route6 = parseRoutes(await Promise.all(route6files.map(f => readFile(f, 'utf8'))), true)
   return { route4, route6 }
 } 
 
-function parseRoutes (routes) {
+function parseRoutes (routes, ipv6 = false) {
   const out = []
   routes.forEach(r => {
     const data = r.split("\n")
@@ -58,7 +58,7 @@ function parseRoutes (routes) {
     	}, {})
     const [,prefix,subnet] = (data.route || data.route6)[0].match(/^(.+?)\/(\d+)$/)
     const origins = data.origin.map(o => o.slice(2))
-    const max = Math.max(parseInt(subnet), 29)
+    const max = Math.max(parseInt(subnet), ipv6 ? 64 : 28)
     origins.forEach(as => {
       out.push({ prefix, subnet, max, as })
     })

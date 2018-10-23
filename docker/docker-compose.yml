@@ -1,0 +1,40 @@
+version: '2.1'
+services:
+  pause:
+    image: k8s.gcr.io/pause:3.1
+    network_mode: none
+    sysctls:
+    - net.ipv6.conf.all.disable_ipv6=0
+  toolbox:
+    build: ./toolbox
+    restart: always
+    depends_on:
+    - pause
+    network_mode: service:pause
+    privileged: true
+    pid: host
+    sysctls:
+    - net.ipv6.conf.all.disable_ipv6=0
+  bird:
+    build: ./bird
+    restart: always
+    depends_on: 
+    - pause
+    network_mode: service:pause
+    privileged: true
+    volumes:
+    - /etc/bird:/etc/bird:ro
+    sysctls:
+    - net.ipv6.conf.all.disable_ipv6=0
+  netman:
+    build: ./netman
+    restart: always
+    depends_on:
+    - pause
+    network_mode: service:pause
+    pid: host
+    privileged: true
+    volumes:
+    - /etc/bird:/etc/bird:ro
+    sysctls:
+    - net.ipv6.conf.all.disable_ipv6=0

@@ -46,3 +46,11 @@ files:
   - pull
   - peers
   reloadCmd: '/etc/bird/wireguard/wireguard.sh restart'
+- 
+  key: dn42
+  template: '{{wgConfig}}'
+  dest: out/bird/wireguard/config.json
+  modules:
+  - pull
+  - peers
+  reloadCmd: '/etc/bird/wireguard/wireguard.sh restart'

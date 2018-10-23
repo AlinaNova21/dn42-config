@@ -4,6 +4,7 @@ const YAML = require('yamljs')
 const cache = new Map()
 
 module.exports = async (config, data) => {
+  data.pullUrls = data.pullUrls || []
 	for(const url of data.pullUrls) {
 		if (!cache.has(url)) {
   		console.log(`Fetching config from ${url}`)
