@@ -68,3 +68,11 @@ peers:
     publicKey:
   ipv4:
   ipv6: 
+- name: tchadelicard
+  enabled: false
+  as: '4242423966'
+  wireguard:
+    endpoint:
+    publicKey:
+  ipv4:
+  ipv6: 
