@@ -21,7 +21,7 @@ files:
   - pull
   - dn42_registry
   - peers
-  reloadCmd: '/app/reload_bird.js'
+  reloadCmd: './reload_bird.js'
 - 
   key: dn42
   src: templates/roa.conf.tmpl
@@ -29,7 +29,7 @@ files:
   modules:
   - pull
   - dn42_registry
-  reloadCmd: '/app/reload_bird.js'
+  reloadCmd: './reload_bird.js'
 - 
   key: dn42
   src: templates/peers.conf.tmpl
@@ -37,7 +37,7 @@ files:
   modules:
   - pull
   - peers
-  reloadCmd: '/app/reload_bird.js'
+  reloadCmd: './reload_bird.js'
 - 
   key: dn42
   template: '{{wgConfig}}'

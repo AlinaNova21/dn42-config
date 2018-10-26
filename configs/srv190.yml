@@ -1,12 +1,12 @@
-ipv4: '172.22.169.3'
-ipv6: 'fd42:465:1337::1:119'
-localipv6: 'fe80::1:119'
+ipv4: '172.22.169.4'
+ipv6: 'fd42:465:1337::1:190'
+localipv6: 'fe80::1:190'
 region: 42
 ibgp:
 - name: us01
   enabled: true
   wireguard:
-    endpoint: dn42-us01.ags131.space:43119
+    endpoint: dn42-us01.ags131.space:43193
     publicKey: jhZ9cJbZjfP4yqYd18a0Ua6x8X1LETOOiktcKWFdl3k=
   ipv4: '172.22.169.2'
   ipv6: 'fe80::564:1337:2'
@@ -14,10 +14,10 @@ ibgp:
   enabled: true
   ipv4: '172.22.169.1'
   ipv6: 'fe80::465:1337:1'
-- name: srv190
+- name: ws119
   enabled: true
-  ipv4: '172.22.169.4'
-  ipv6: 'fe80::1:190'
+  ipv4: '172.22.169.3'
+  ipv6: 'fe80::1:119'
 peers: []
 vpns:
 - name: net-a1

@@ -6,10 +6,26 @@ ipv6 table T_iBGP_{{name}}_v6;
 {{/if}}
 protocol bgp {{name}}_multi {{#if type}}from {{type}}{{/if}} {
   {{#unless debug}}#{{/unless}}debug all;
-  {{#if (eq type 'iBGP_Peer')}}
-  ipv4 { table T_iBGP_{{name}}_v4; };
-  ipv6 { table T_iBGP_{{name}}_v6; };
-  {{/if}}
+  ipv4 { 
+	  {{#if (eq type 'iBGP_Peer')}}
+  	table T_iBGP_{{name}}_v4; 
+		{{/if}}
+  	{{#if filter}}
+  	# {{latency}} ms, {{speed}} mbit/s, {{crypto}} tunnel (updated: {{filterDate}})
+  	import where dn42_import_filter_v4({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	export where dn42_export_filter_v4({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	{{/if}}
+  };
+  ipv6 {
+  	{{#if (eq type 'iBGP_Peer')}}
+  	table T_iBGP_{{name}}_v6; 
+  	{{/if}}
+  	{{#if filter}}
+  	# {{latency}} ms, {{speed}} mbit/s, {{crypto}} tunnel (updated: {{filterDate}})
+  	import where dn42_import_filter_v6({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	export where dn42_export_filter_v6({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	{{/if}}
+  };
   {{#if (eq multiChannel 'ipv6')}}
   source address {{../localipv6}};
   neighbor {{ipv6}}%'{{wireguard.interface}}' as {{as}};
@@ -22,12 +38,32 @@ protocol bgp {{name}}_multi {{#if type}}from {{type}}{{/if}} {
 {{#if ipv4}}
 protocol bgp {{ name }}_v4 from {{#if type}}{{type}}{{/if}} {
   {{#unless debug}}#{{/unless}}debug all;
+  ipv4 { 
+	  {{#if (eq type 'iBGP_Peer')}}
+  	table T_iBGP_{{name}}_v4; 
+		{{/if}}
+  	{{#if filter}}
+  	# {{latency}} ms, {{speed}} mbit/s, {{crypto}} tunnel (updated: {{filterDate}})
+  	import where dn42_import_filter_v4({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	export where dn42_export_filter_v4({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	{{/if}}
+  };
   neighbor {{ipv4}} as {{as}};
 };
 {{/if}}
 {{#if ipv6}}
 protocol bgp {{name}}_v6 from {{#if type}}{{type}}{{/if}} {
   {{#unless debug}}#{{/unless}}debug all;
+  ipv6 {
+  	{{#if (eq type 'iBGP_Peer')}}
+  	table T_iBGP_{{name}}_v6; 
+  	{{/if}}
+  	{{#if filter}}
+  	# {{latency}} ms, {{speed}} mbit/s, {{crypto}} tunnel (updated: {{filterDate}})
+  	import where dn42_import_filter_v6({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	export where dn42_export_filter_v6({{filter.[0]}},{{filter.[1]}},{{filter.[2]}});
+  	{{/if}}
+  };
   source address {{../localipv6}};
   neighbor {{ipv6}}%'{{wireguard.interface}}' as {{as}};
 };

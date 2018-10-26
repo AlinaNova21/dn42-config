@@ -1,7 +1,9 @@
 const dns = require('dns')
+const child_process = require('child_process')
 const util = require('util')
 
 const lookup = util.promisify(dns.lookup)
+const exec = util.promisify(child_process.exec)
 
 module.exports = async (config, data) => {
   data.netsets = {
@@ -36,6 +38,13 @@ module.exports = async (config, data) => {
 			const [host,port] = p.wireguard.endpoint.split(':')
 			const { address } = await lookup(host, { verbatim: true })
 			p.wireguard.endpoint = `${address || host}:${port}`
+			p.cryptoType = 'wireguard'
+      p.crypto = 'pfs'
+      p.speed = p.speed || 100
+      p.latency = p.latency || await ping(address || host)
+		}
+		if (p.latency && p.speed && p.crypto) {
+			p.filter = [latencyClass(p.latency), speedClass(p.speed), cryptoClass(p.crypto)]
 		}
   }
   data.wgConfig = JSON.stringify({
@@ -51,4 +60,43 @@ module.exports = async (config, data) => {
         return wg 
       })
   })
+}
+
+
+function latencyClass(lat) {
+  if (lat < 2.7) return 1
+	if (lat < 7.3) return 2
+	if (lat < 20) return 3
+	return Math.round(Math.log(lat))
+}
+
+function speedClass(spd) {
+	if (spd === 0) throw new Error(`invalid speed ${spd}`)
+	if (spd < 1) return 21
+	if (spd < 10) return 22
+	if (spd < 100) return 23
+	if (spd < 1000) return 24
+	if (spd < 10000) return 25
+	return 20 + Math.round(Math.log10(spd * 100))
+}
+
+function cryptoClass(cr) {
+	if (cr === 'unencrypted') return 31
+	if (cr === 'unsafe') return 32
+	if (cr === 'encrypted') return 33
+	if (cr === 'pfs') return 34
+	throw new Error(`unknown type ${cr}`)
+}
+
+async function ping(host, ipv6 = false) {
+	try {
+		console.log(`Pinging ${host}`)
+		ipv6 |= host.includes(':')
+	  const { stdout, stderr } = await exec(`ping ${ipv6?'-6':'-4'} -W10 -c5 ${host}`)
+	 	const latency = parseInt(stdout.split('\n').slice(-2)[0].split('/')[5])
+	  console.log(`Ping complete: ${latency} ms`)
+	  return latency
+	} catch(e) {
+	  throw new Error(`ping failed:\n${e.stdout}\n${e.stderr} ${e}`)
+	}
 }

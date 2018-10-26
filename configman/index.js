@@ -50,7 +50,7 @@ async function run() {
   }
   for(const cmd of reloads) {
   	console.log(`Executing: ${cmd}`)
-    const { stdout, stderr } = await exec(cmd)
+    const { stdout, stderr } = await exec(cmd, { cwd: __dirname })
     process.stdout.write(stdout)
     process.stderr.write(stderr)
   }

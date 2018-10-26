@@ -7,6 +7,7 @@ ibgp:
   enabled: true
   ipv4: '172.22.169.2'
   ipv6: 'fe80::465:1337:2'
+  latency: 97
   wireguard:
     listenPort: 43002
     endpoint: dn42-us01.ags131.space:43001
@@ -15,10 +16,16 @@ ibgp:
   enabled: true
   ipv4: '172.22.169.3'
   ipv6: 'fe80::1:119'
+- name: srv190
+  enabled: true
+  ipv4: '172.22.169.4'
+  ipv6: 'fe80::1:190'
+  
 peers:
 - name: burble
   enabled: true
   as: '4242422601'
+  latency: 4
   wireguard:
     listenPort: 42001
     endpoint: dn42-fr-rbx1.burble.com:49943
@@ -28,6 +35,7 @@ peers:
 - name: weiti
   enabled: true
   as: '4242423905'
+  latency: 9
   wireguard: 
     listenPort: 42002
     publicKey: kFHKnMg0EKUEPC8bKMSlQdL01wFwHsyg80GvTDd9hSk=
@@ -38,6 +46,7 @@ peers:
   enabled: true
   multiChannel: ipv6
   as: '4242421191'
+  latency: 21
   wireguard:
     endpoint: vps.pub.yamakaja.me:11258
     publicKey: c5Dw1Sc68+/YqrFGLIQYIYKW6KFsbRV2JEjOEtOpBRg=
@@ -46,6 +55,7 @@ peers:
 - name: graffen
   enabled: true
   as: '4242423934'
+  latency: 21
   wireguard:
     endpoint: dn42-de-fsn1.hessnet.dk:51827
     publicKey: qChjUaGN7D44d+3KJk4liFQvm8EQuKGYXlCMOYQhLx8=
@@ -55,24 +65,27 @@ peers:
   enabled: true
   multiChannel: ipv6
   as: '4242421926'
+  latency: 5
   wireguard:
     endpoint: 178.33.208.43:20131
     publicKey: ECLk/X4ciNHnTcXxn2sO5OLnYu6NiyrTexzlfDd+QBo=
   ipv4: '172.20.138.5'
   ipv6: 'fe80::2e41'
-- name: jamie9898
-  enabled: false
-  as: '4242423640'
-  wireguard:
-    endpoint:
-    publicKey:
-  ipv4:
-  ipv6: 
 - name: tchadelicard
-  enabled: false
+  enabled: true
   as: '4242423966'
+  latency: 7
   wireguard:
-    endpoint:
-    publicKey:
-  ipv4:
-  ipv6: 
+    endpoint: cronos.tchadelicard.fr:20131
+    publicKey: 1C3C6WTo9Aokt7nNwMoES7ru3OCpLkZlmsawbq1FKHs=
+  ipv4: 172.20.34.1
+  ipv6: 'fe80::3966:1'
+- name: mrxermon
+  enabled: true
+  as: '4242423506'
+  latency: 16
+  wireguard:
+    endpoint: rt-1.dn42.mrxermon.de:20131
+    publicKey: QCr2kusRCEw0maUIKpbZrmZI7sWz0uz9/IEnmMEbhAE=
+  ipv4: '172.20.178.96'
+  ipv6: 'fe80::ccf8:96'

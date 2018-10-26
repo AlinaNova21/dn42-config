@@ -1,10 +1,11 @@
 ipv4: '172.22.169.2'
 ipv6: 'fd42:465:1337::2'
 localipv6: 'fe80::465:1337:2'
-region: 41
+region: 42
 ibgp:
 - name: fr01
   enabled: true
+  latency: 102
   wireguard:
     listenPort: 43001
     endpoint: dn42-fr01.ags131.space:43002
@@ -13,17 +14,28 @@ ibgp:
   ipv6: 'fe80::465:1337:1'
 - name: ws119
   enabled: true
+  latency: 32
   wireguard:
     listenPort: 43119
     endpoint: ''
     publicKey: uQG3wyrhE8poRlGum8j/0Npb3t6AaNAz+6Txt+jxWTA=
   ipv4: '172.22.169.3'
   ipv6: 'fe80::1:119'
+- name: srv190
+  enabled: true
+  latency: 32
+  wireguard:
+    listenPort: 43193
+    endpoint: ''
+    publicKey: cc2XZ/7L05Zz04PWjDLEj1LaoRNP5G3zuz8x1QcM/UU=
+  ipv4: '172.22.169.4'
+  ipv6: 'fe80::1:190'
 peers:
 - name: zhaofeng
   enabled: true
   multiChannel: ipv6
   as: '4242421926'
+  latency: 18
   wireguard:
     endpoint: 35.196.71.177:20131
     publicKey: nu5XkSjLCEQkiaXj4JWSUQrO3gstTiMGNAQmt+ubyHc=
