@@ -43,10 +43,12 @@ services:
     depends_on:
     - pause
     network_mode: service:pause
-    pid: host
-    privileged: true
+    cap_add:
+    - NET_ADMIN
+    - SYS_ADMIN
     volumes:
     - data:/data:ro
+    - /proc/1/ns/net:/proc_1_ns_net:ro
   configman:
     build: ./configman
     restart: always
@@ -57,6 +59,19 @@ services:
   birdwatcher:
     image: k8s.gcr.io/pause:3.1
     # TODO: Build birdwatcher image, link to bird container
+  bird_exporter:
+    image: openvnf/bird_exporter
+    restart: always
+    depends_on:
+    - pause
+    network_mode: service:pause
+    command:
+    - -format.new
+    - -bird.v2
+    - -bird.socket
+    - /var/run/bird.ctl
+    volumes:
+    - run:/var/run
 volumes:
   data:
   run:

@@ -89,3 +89,14 @@ peers:
     publicKey: QCr2kusRCEw0maUIKpbZrmZI7sWz0uz9/IEnmMEbhAE=
   ipv4: '172.20.178.96'
   ipv6: 'fe80::ccf8:96'
+- name: jamie9898
+  enabled: true
+  as: '4242423640'
+  latency: 1.8
+  wireguard:
+    endpoint: pablo.dn42.hessenet.org:51730
+    publicKey: 2Nt0ii9a0VW9ZnyOrdd1kSFYARYXl3FlvyFchJPi6Rc=
+  ipv4: '172.20.12.97'
+  ipv6: 'fe80::12:97'
+
+  

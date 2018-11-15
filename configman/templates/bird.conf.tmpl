@@ -4,7 +4,9 @@ define OWNIPv6 = {{ipv6}};
 define OWNNETv4 = {{ownnet.ipv4}};
 define OWNNETv6 = {{ownnet.ipv6}};
 
+{{#if docker }}
 log stderr all;
+{{/if}}
 
 define OWNNETSETv4 = [
   {{#each nets.ipv4}}
@@ -106,6 +108,11 @@ int dn42_crypto;
   dn42_crypto = update_crypto(link_crypto) - 30;
   # replace 4 with your calculated bandwidth value
   if dn42_bandwidth > 4 then dn42_bandwidth = 4;
+  # bgp_local_pref = 10000+100*dn42_bandwidth + 50*(10-dn42_latency)-200*bgp_path.len+100*dn42_crypto; # (as suggested by tombii)
+  # bgp_local_pref = 1000*dn42_bandwidth - 10*dn42_latency; if dn42_crypto < 2 then bgp_local_pref = 0; # (as suggested by Jplitza)
+  # bgp_local_pref = 10000+100*dn42_bandwidth + 50*(10-dn42_latency)-400*(bgp_path.len-1)+100*dn42_crypto; # (as suggested by Mic92 - prefer direct tunnel)
+  bgp_local_pref = 10000+100*dn42_bandwidth + 50*(10-dn42_latency)-200*bgp_path.len+100*dn42_crypto; # (as suggested by tombii)
+  if dn42_crypto < 3 then bgp_local_pref = 0; # Never prefer weak/no security connections.
   return true;
 }
 
@@ -260,8 +267,9 @@ protocol ospf v3 O_OSPF_v6 {
   };
 }
 
-function iBGP_routing_policy() {
+function iBGP_routing_policy_v4() {
   if source = RTS_OSPF then return false;       # For iBGP i don't want OSPF in my Routing Policy
+  if is_self_net_v4() then return true;
   if source = RTS_DEVICE then return false;     # For iBGP i don't want DEVICE ROUTES in my Routing Policy
 
   krt_prefsrc = OWNIPv4;
@@ -271,6 +279,7 @@ function iBGP_routing_policy() {
 
 function iBGP_routing_policy_v6() {
   if source = RTS_OSPF then return false;       # For iBGP i don't want OSPF in my Routing Policy
+  if is_self_net_v6() then return true;
   if source = RTS_DEVICE then return false;     # For iBGP i don't want DEVICE ROUTES in my Routing Policy
 
   krt_prefsrc = OWNIPv6;
@@ -329,8 +338,8 @@ ipv6 table T_DUMMY_v6;
 template pipe iBGP_Pipe_v4 {
   table T_DUMMY_v4;
   peer table master4;
-  import where iBGP_routing_policy();
-  export where iBGP_routing_policy();
+  import where iBGP_routing_policy_v4();
+  export where iBGP_routing_policy_v4();
 }
 
 template pipe iBGP_Pipe_v6 {

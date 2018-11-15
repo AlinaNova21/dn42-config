@@ -41,3 +41,12 @@ peers:
     publicKey: nu5XkSjLCEQkiaXj4JWSUQrO3gstTiMGNAQmt+ubyHc=
   ipv4: '172.20.138.6'
   ipv6: 'fe80::2e41'
+- name: jonas
+  enabled: true
+  as: '4242420789'
+  latency: 18
+  wireguard:
+    endpoint: go1.joseng.de:51825
+    publicKey: TTfhAxcm0juU2IhrfNBEgvHqvmMpYlBxeEGrZXkIfyk=
+  ipv4: '172.20.6.17'
+  ipv6: 'fe80::172:20:6:17'

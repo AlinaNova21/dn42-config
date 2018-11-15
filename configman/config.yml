@@ -40,6 +40,21 @@ files:
   reloadCmd: './reload_bird.js'
 - 
   key: dn42
+  src: templates/peers.sh.tmpl
+  dest: /data/bird/wireguard/peers.sh
+  modules:
+  - pull
+  - peers
+  reloadCmd: 'systemctl restart wireguard' 
+- 
+  key: dn42
+  template: '{{dn42.exports}}'
+  dest: /data/exports.json
+  modules:
+  - pull
+  - dn42_registry
+- 
+  key: dn42
   template: '{{wgConfig}}'
   dest: /data/wireguard/config.json
   modules:
